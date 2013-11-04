@@ -15,6 +15,7 @@
  */
 package io.vertx.lang.php.http;
 
+import com.caucho.quercus.env.*;
 import io.vertx.lang.php.Gettable;
 import io.vertx.lang.php.MultiMapArray;
 import io.vertx.lang.php.Settable;
@@ -25,11 +26,9 @@ import io.vertx.lang.php.util.HandlerFactory;
 import io.vertx.lang.php.util.PhpTypes;
 
 import com.caucho.quercus.annotation.Optional;
-import com.caucho.quercus.env.BooleanValue;
-import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.NumberValue;
-import com.caucho.quercus.env.StringValue;
-import com.caucho.quercus.env.Value;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A PHP compatible implementation of the Vert.x HttpServerResponse.
@@ -100,6 +99,17 @@ public class HttpServerResponse implements WriteStream<HttpServerResponse>, Exce
    * Puts an HTTP header.
    */
   public HttpServerResponse putHeader(Env env, StringValue name, Value value) {
+    if(value.isArray()){
+        List<String> list = new ArrayList<String>();
+        ArrayValue arr = value.toArray();
+
+        for(int i = 0; i < arr.length(); i++){
+            list.add(arr.get(i).toString());
+        }
+
+        response.putHeader(name.toString(), list);
+        return this;
+    }
     response.putHeader(name.toString(), value.toString());
     return this;
   }

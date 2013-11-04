@@ -145,12 +145,14 @@ public class PhpVerticleFactory implements VerticleFactory {
 				QuercusProgram program = context.parseCode(context.createString(script));
 				program.execute(env);
 			} catch (NullPointerException np) {
-				if (Vertx.logger() == null) {
-					System.out.println(String.format("could not find Vertx resource '%s''", resourceName));
-				} else {
-					Vertx.logger().error(String.format("could not find Vertx resource '%s''", resourceName));
-				}
-				np.printStackTrace();
+                if(resourceName.indexOf(".php") == -1){
+                    if (Vertx.logger() == null) {
+                        System.out.println(String.format("could not find Vertx resource '%s''", resourceName));
+                    } else {
+                        Vertx.logger().error(String.format("could not find Vertx resource '%s''", resourceName));
+                    }
+                    np.printStackTrace();
+                }
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

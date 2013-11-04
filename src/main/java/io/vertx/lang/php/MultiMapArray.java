@@ -29,7 +29,7 @@ import com.caucho.quercus.lib.spl.Countable;
  */
 public class MultiMapArray implements ArrayAccess, Countable {
 
-  private MultiMap map;
+  public MultiMap map;
 
   public MultiMapArray(MultiMap map) {
     this.map = map;
@@ -62,4 +62,7 @@ public class MultiMapArray implements ArrayAccess, Countable {
     return map.size();
   }
 
+  public Value entries(){
+      return Env.getCurrent().wrapJava(map.entries());
+  }
 }
