@@ -145,8 +145,9 @@ public final class Vertx {
    */
   public static LongValue setTimer(Env env, LongValue delay, Value handler) {
     PhpTypes.assertCallable(env, handler, "Handler argument to Vertx::runOnContext() must be callable.");
-    PhpVerticleFactory.vertx.setTimer(delay.toLong(), HandlerFactory.<Long>createGenericHandler(env, handler));
-    return delay;
+    long timerId = PhpVerticleFactory.vertx.setTimer(delay.toLong(), HandlerFactory.<Long>createGenericHandler(env, handler));
+    LongValue timerIdLongVal = new LongValue(timerId);
+    return timerIdLongVal;
   }
 
   /**
@@ -154,8 +155,9 @@ public final class Vertx {
    */
   public static LongValue setPeriodic(Env env, LongValue delay, Value handler) {
     PhpTypes.assertCallable(env, handler, "Handler argument to Vertx::runOnContext() must be callable.");
-    PhpVerticleFactory.vertx.setPeriodic(delay.toLong(), HandlerFactory.<Long>createGenericHandler(env, handler));
-    return delay;
+    long timerId = PhpVerticleFactory.vertx.setPeriodic(delay.toLong(), HandlerFactory.<Long>createGenericHandler(env, handler));
+    LongValue timerIdLongVal = new LongValue(timerId);
+    return timerIdLongVal;
   }
 
   /**
