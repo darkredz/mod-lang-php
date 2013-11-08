@@ -28,7 +28,7 @@ import com.caucho.quercus.lib.spl.ArrayAccess;
  */
 public class SharedMap implements ArrayAccess {
 
-  private ConcurrentSharedMap<Object, Object> map;
+  public ConcurrentSharedMap<Object, Object> map;
 
   SharedMap(ConcurrentSharedMap<Object, Object> map) {
     this.map = map;
@@ -54,6 +54,14 @@ public class SharedMap implements ArrayAccess {
   public Value offsetUnset(Value key) {
     map.remove(key.toJavaObject());
     return null;
+  }
+
+  public void put(Object key, Object value){
+    map.put(key, value);
+  }
+
+  public Object get(Object key){
+    return map.get(key);
   }
 
 }

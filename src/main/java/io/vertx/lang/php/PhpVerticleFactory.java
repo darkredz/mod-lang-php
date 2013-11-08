@@ -278,13 +278,13 @@ public class PhpVerticleFactory implements VerticleFactory {
       String classLoaderScript = "spl_autoload_register(function($class) {" +
   		    "require_vertx(str_replace('\\\\', '/', $class) . '.php');" +
           "});";
-      
+
       // Evaluate a single line script which includes the verticle
       // script. This ensures that exceptions can be accurately logged
       // because Quercus will record actual file names rather than a
       // generic "eval" name.
       String script = String.format("<?php " + classLoaderScript + "require '%s'; ?>", this.scriptName);
-      
+
       try (ReadStream reader = (new StringPath(script)).openRead()) {
         QuercusProgram program = QuercusParser.parse(context, null, reader);
         QuercusPage page = new InterpretedPage(program);
