@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../vert.x-2.1M1/sys-mods/io.vertx~lang-php~2.0.0" />
+    <output url="file://$MODULE_DIR$/../../vert.x-2.1M2-SNAPSHOT/sys-mods/io.vertx~lang-php~2.0.0" />
     <output-test url="file://$MODULE_DIR$/out/test/VertxPhp" />
     <exclude-output />
     <content url="file://$MODULE_DIR$" />

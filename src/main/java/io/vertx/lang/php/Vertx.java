@@ -15,6 +15,7 @@
  */
 package io.vertx.lang.php;
 
+import com.caucho.quercus.env.*;
 import io.vertx.lang.php.eventbus.EventBus;
 import io.vertx.lang.php.file.FileSystem;
 import io.vertx.lang.php.http.HttpClient;
@@ -31,14 +32,6 @@ import java.util.Map;
 import org.vertx.java.core.logging.Logger;
 
 import com.caucho.quercus.annotation.Optional;
-import com.caucho.quercus.env.ArrayValue;
-import com.caucho.quercus.env.ArrayValueImpl;
-import com.caucho.quercus.env.BooleanValue;
-import com.caucho.quercus.env.NumberValue;
-import com.caucho.quercus.env.StringValue;
-import com.caucho.quercus.env.Value;
-import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.LongValue;
 
 /**
  * A static Vertx instance access class.
@@ -301,7 +294,22 @@ public final class Vertx {
     return PhpVerticleFactory.container.logger();
   }
 
+
   /**
+   * Set PHP exception handler function
+   */
+  public static void exceptionHandler(Env env, Callable handler) {
+    PhpVerticleFactory2.exceptionHandler = handler;
+  }
+
+  /**
+   * Set PHP exception handler function
+   */
+  public static Callable exceptionHandler(Env env) {
+    return PhpVerticleFactory2.exceptionHandler;
+  }
+
+    /**
    * Returns the Vertx configuration.
    */
   public static ArrayValue config(Env env) {
