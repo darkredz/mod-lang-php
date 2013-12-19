@@ -96,6 +96,15 @@ public class HttpServer extends TCPServer<org.vertx.java.core.http.HttpServer> {
   }
 
   /**
+   * Enable output compression
+   * @param env
+   * @param turnOn
+   */
+  public void setCompressionSupported(Env env, Value turnOn) {
+    server.setCompressionSupported(turnOn.toBoolean());
+  }
+
+  /**
    * Creates or gets the server request handler.
    * 
    * @param handler
