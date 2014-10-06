@@ -30,7 +30,7 @@ public class SharedMap implements ArrayAccess {
 
   public ConcurrentSharedMap<Object, Object> map;
 
-  SharedMap(ConcurrentSharedMap<Object, Object> map) {
+    SharedMap(ConcurrentSharedMap<Object, Object> map) {
     this.map = map;
   }
 

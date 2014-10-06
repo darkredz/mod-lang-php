@@ -9,7 +9,7 @@
 
   <groupId>io.vertx</groupId>
   <artifactId>lang-php</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.1.0-beta2-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>PHP Vert.x lang module</name>
   <description>A PHP language implementation for the Vert.x application platform.</description>
@@ -19,7 +19,8 @@
   <properties>
     <module.name>${project.groupId}~${project.artifactId}~${project.version}</module.name>
 
-    <vertx.version>2.0.2-SNAPSHOT</vertx.version>
+    <vertx.version>2.1RC1</vertx.version>
+    <testtools.version>2.0.2-final</testtools.version>
     <junit.version>4.8.2</junit.version>
     <quercus.version>4.0.36</quercus.version>
     <servlet.version>2.5</servlet.version>
@@ -76,7 +77,7 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>testtools</artifactId>
-      <version>${vertx.version}</version>
+      <version>${testtools.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -247,19 +248,18 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>${maven.assembly.plugin.version}</version>
         <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptors>
-            <descriptor>src/main/assembly/mod.xml</descriptor>
-          </descriptors>
           <attach>true</attach>
         </configuration>
         <executions>
           <execution>
-            <id>create-distribution</id>
+            <id>mod</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
+            <configuration>
+              <descriptor>src/main/assembly/mod.xml</descriptor>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -319,7 +319,7 @@
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <ignore></ignore>
+                    <ignore />
                   </action>
                 </pluginExecution>
               </pluginExecutions>
