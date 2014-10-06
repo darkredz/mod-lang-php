@@ -284,7 +284,7 @@ public class PhpVerticleFactory implements VerticleFactory {
     @Override
     public void start() {
       String classLoaderScript = "spl_autoload_register(function($class) {" +
-  		    "require_vertx(str_replace('\\\\', '/', $class) . '.php');" +
+  		    "if(substr($class, 0, 5)==='Vertx'){require_vertx(str_replace('\\\\', '/', $class) . '.php');}" +
           "});";
       
       // Evaluate a single line script which includes the verticle
