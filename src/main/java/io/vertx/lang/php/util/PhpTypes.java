@@ -331,7 +331,7 @@ public class PhpTypes {
         json.putString(key.toString(), value.toString());
       }
       else {
-        json.putValue(key.toString(), value.toJavaObject());
+          json.putValue(key.toString(), value.toString());
       }
     }
     return json;
@@ -370,7 +370,7 @@ public class PhpTypes {
         json.addString(value.toString());
       }
       else {
-        json.add(value.toJavaObject());
+        json.add(value.toString());
       }
     }
     return json;
