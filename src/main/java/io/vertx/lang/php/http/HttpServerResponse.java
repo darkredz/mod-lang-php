@@ -144,7 +144,8 @@ public class HttpServerResponse implements WriteStream<HttpServerResponse>, Exce
         response.write(((Buffer) data.toJavaObject(env, Buffer.class)).__toVertxBuffer());
       }
       else {
-        response.write(data.toString(), enc.toString());
+        byte[] bytes = data.toStringValue().toBytes();
+        response.write(new org.vertx.java.core.buffer.Buffer(bytes));
       }
     }
     else {
@@ -152,7 +153,8 @@ public class HttpServerResponse implements WriteStream<HttpServerResponse>, Exce
         response.write(((Buffer) data.toJavaObject(env, Buffer.class)).__toVertxBuffer());
       }
       else {
-        response.write(data.toString());
+        byte[] bytes = data.toStringValue().toBytes();
+        response.write(new org.vertx.java.core.buffer.Buffer(bytes));
       }
     }
     return this;
@@ -167,7 +169,14 @@ public class HttpServerResponse implements WriteStream<HttpServerResponse>, Exce
   }
 
   public void end(Env env, Value data) {
-    response.end(data.toString());
+
+    if (data.isObject()) {
+        response.write(((Buffer) data.toJavaObject(env, Buffer.class)).__toVertxBuffer());
+    }
+    else {
+      byte[] bytes = data.toStringValue().toBytes();
+      response.end(new org.vertx.java.core.buffer.Buffer(bytes));
+    }
   }
 
   @Override
