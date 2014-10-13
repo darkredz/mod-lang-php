@@ -16,8 +16,10 @@
 package io.vertx.lang.php.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import org.vertx.java.core.MultiMap;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
@@ -367,10 +369,12 @@ public class PhpTypes {
         json.addNumber(value.toInt());
       }
       else if (value.isString()) {
+//        byte[] bytes = value.toStringValue().toBytes();
         json.addString(value.toString());
       }
       else {
-        json.add(value.toString());
+//        byte[] bytes = value.toStringValue().toBytes();
+        json.addString(value.toString());
       }
     }
     return json;
@@ -413,6 +417,27 @@ public class PhpTypes {
       else {
         result.put(env.createString(key), env.wrapJava(value));
       }
+    }
+    return result;
+  }
+
+
+  /**
+   * Converts a MultiMap object to a PHP array.
+   *
+   * @param env The Quercus environment.
+   * @param json A Vert.x json object.
+   * @return A populated PHP array.
+   */
+  public static ArrayValue arrayFromJson(Env env, MultiMap map) {
+    ArrayValue result = new ArrayValueImpl();
+
+    List<Map.Entry<String, String>> entries = map.entries();
+    for (int i=0; i < entries.size(); i++) {
+      Map.Entry<String, String> entry = entries.get(i);
+      String key = entry.getKey();
+      Object value = entry.getValue();
+      result.put(env.createString(key), env.wrapJava(value));
     }
     return result;
   }

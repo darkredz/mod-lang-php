@@ -15,6 +15,7 @@
  */
 package io.vertx.lang.php.http;
 
+import com.caucho.quercus.env.*;
 import io.vertx.lang.php.Gettable;
 import io.vertx.lang.php.Handler;
 import io.vertx.lang.php.MultiMapArray;
@@ -25,11 +26,6 @@ import io.vertx.lang.php.util.HandlerFactory;
 import io.vertx.lang.php.util.PhpTypes;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-
-import com.caucho.quercus.env.BooleanValue;
-import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.StringValue;
-import com.caucho.quercus.env.Value;
 
 /**
  * A PHP compatible implementation of the Vert.x HttpServerRequest.
@@ -54,7 +50,8 @@ public class HttpServerRequest implements ReadStream<HttpServerRequest>, Gettabl
   }
 
   public Value headers(Env env) {
-    return env.wrapJava(new MultiMapArray(request.headers()));
+//    return env.wrapJava(new MultiMapArray(request.headers()));
+    return PhpTypes.arrayFromJson(env, request.headers());
   }
 
   public Value method(Env env) {
