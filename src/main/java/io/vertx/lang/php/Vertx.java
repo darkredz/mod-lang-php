@@ -313,7 +313,7 @@ public final class Vertx {
    * Returns the Vertx configuration.
    */
   public static ArrayValue config(Env env) {
-    return PhpTypes.arrayFromJson(env, PhpVerticleFactory.container.config());
+    return (ArrayValue)PhpTypes.arrayFromJson(env, PhpVerticleFactory.container.config());
   }
 
   public String toString() {

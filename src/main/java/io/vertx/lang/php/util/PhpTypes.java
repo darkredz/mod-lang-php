@@ -19,16 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.caucho.quercus.env.*;
 import org.vertx.java.core.MultiMap;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
 import com.caucho.quercus.Location;
-import com.caucho.quercus.env.ArrayValue;
-import com.caucho.quercus.env.ArrayValueImpl;
-import com.caucho.quercus.env.Callable;
-import com.caucho.quercus.env.Env;
-import com.caucho.quercus.env.Value;
 
 /**
  * Static class for validating PHP variable values.
@@ -307,10 +303,15 @@ public class PhpTypes {
    */
   public static JsonObject arrayToJsonObject(Env env, Value array) {
     JsonObject json = new JsonObject();
-    Iterator<Value> iter = array.getKeyIterator(env);
+    Iterator<Map.Entry<Value, Value>> iter = array.getIterator(env);
+
     while (iter.hasNext()) {
-      Value key = iter.next();
-      Value value = array.get(key);
+      Map.Entry<Value, Value> entry = iter.next();
+
+      Value key = entry.getKey();
+      Value value = entry.getValue();
+
+//      System.out.println("++++0 " + key.toString());
       if (value.isArray()) {
         // Determine whether this is an associative array.
         if (PhpTypes.arrayIsAssoc(env, value)) {
@@ -332,8 +333,18 @@ public class PhpTypes {
       else if (value.isString()) {
         json.putString(key.toString(), value.toString());
       }
+      else if(value instanceof ObjectExtValue){
+//        System.out.println("0------ " + value.getType() + "  ----  "+ value.getClassName() + "  ----  "+ value.getResourceType()+ "  ----  "+ value.getQuercusClass());
+        json.putObject(key.toString(), PhpTypes.arrayToJsonObject(env, value));
+      }
       else {
+//        System.out.println("1------ " + value.getType() + "  ----  "+ value.getClassName() + "  ----  "+ value.getResourceType()+ "  ----  "+ value.getQuercusClass());
+        if(value.getClassName() == null || value.getClassName().equals("NULL")){
+          json.putValue(key.toString(), null);
+        }
+        else{
           json.putValue(key.toString(), value.toString());
+        }
       }
     }
     return json;
@@ -348,9 +359,14 @@ public class PhpTypes {
    */
   public static JsonArray arrayToJsonArray(Env env, Value array) {
     JsonArray json = new JsonArray();
-    Iterator<Value> iter = array.getValueIterator(env);
+    Iterator<Map.Entry<Value, Value>> iter = array.getIterator(env);
+
     while (iter.hasNext()) {
-      Value value = iter.next();
+      Map.Entry<Value, Value> entry = iter.next();
+
+      Value value = entry.getValue();
+      Value key = entry.getKey();
+
       if (value.isArray()) {
         if (PhpTypes.arrayIsAssoc(env, value)) {
           json.addObject(PhpTypes.arrayToJsonObject(env, value));
@@ -369,12 +385,21 @@ public class PhpTypes {
         json.addNumber(value.toInt());
       }
       else if (value.isString()) {
-//        byte[] bytes = value.toStringValue().toBytes();
         json.addString(value.toString());
       }
+      else if(value instanceof ObjectExtValue){
+//        System.out.println("3++++ " + key.toString() + "    ,    " + value.toString());
+//        System.out.println("3------ " + value.getType() + "  ----  "+ value.getClassName() + "  ----  "+ value.getResourceType()+ "  ----  "+ value.getQuercusClass());
+        json.addObject(PhpTypes.arrayToJsonObject(env, value));
+      }
       else {
-//        byte[] bytes = value.toStringValue().toBytes();
-        json.addString(value.toString());
+//        System.out.println("4------ " + value.getType() + "  ----  "+ value.getClassName() + "  ----  "+ value.getResourceType()+ "  ----  "+ value.getQuercusClass());
+        if(value.getClassName() == null || value.getClassName().equals("NULL")){
+          json.add(null);
+        }
+        else{
+          json.addString(value.toString());
+        }
       }
     }
     return json;
@@ -394,33 +419,63 @@ public class PhpTypes {
     return false;
   }
 
-  /**
-   * Converts a JSON object to a PHP array.
-   *
-   * @param env The Quercus environment.
-   * @param json A Vert.x json object.
-   * @return A populated PHP array.
-   */
-  public static ArrayValue arrayFromJson(Env env, JsonObject json) {
-    ArrayValue result = new ArrayValueImpl();
+  public static Value arrayFromJson(Env env, JsonObject json) {
+    return arrayFromJson(env, json, false);
+  }
+
+    /**
+     * Converts a JSON object to a PHP array.
+     *
+     * @param env The Quercus environment.
+     * @param json A Vert.x json object.
+     * @return A populated PHP array.
+     */
+  public static Value arrayFromJson(Env env, JsonObject json, boolean asStdClass) {
+    Value result;
+    if(asStdClass) {
+      result = env.createObject();
+    }
+    else{
+      result = new ArrayValueImpl();
+    }
+
     Map<String, Object> map = json.toMap();
     Iterator<String> iter = map.keySet().iterator();
     while (iter.hasNext()) {
       String key = iter.next();
       Object value = map.get(key);
       if (value instanceof JsonObject) {
-        result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonObject) value));;
+        if(asStdClass) {
+          result.putField(env, env.createString(key), PhpTypes.arrayFromJson(env, (JsonObject) value, asStdClass));
+        }
+        else {
+          result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonObject) value, asStdClass));
+        }
       }
       else if (value instanceof JsonArray) {
-        result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value));;
+        if(asStdClass) {
+          result.putField(env, env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value));
+        }
+        else {
+          result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value));
+        }
       }
       else {
-        result.put(env.createString(key), env.wrapJava(value));
+        if(asStdClass) {
+          result.putField(env, env.createString(key), env.wrapJava(value));
+        }
+        else {
+          result.put(env.createString(key), env.wrapJava(value));
+        }
       }
     }
     return result;
   }
 
+
+  public static Value arrayFromJson(Env env, MultiMap map) {
+    return arrayFromJson(env, map, false);
+  }
 
   /**
    * Converts a MultiMap object to a PHP array.
@@ -429,17 +484,33 @@ public class PhpTypes {
    * @param json A Vert.x json object.
    * @return A populated PHP array.
    */
-  public static ArrayValue arrayFromJson(Env env, MultiMap map) {
-    ArrayValue result = new ArrayValueImpl();
+  public static Value arrayFromJson(Env env, MultiMap map, boolean asStdClass) {
+    Value result;
+    if(asStdClass) {
+      result = env.createObject();
+    }
+    else{
+      result = new ArrayValueImpl();
+    }
 
     List<Map.Entry<String, String>> entries = map.entries();
     for (int i=0; i < entries.size(); i++) {
       Map.Entry<String, String> entry = entries.get(i);
       String key = entry.getKey();
       Object value = entry.getValue();
-      result.put(env.createString(key), env.wrapJava(value));
+      if(asStdClass){
+        result.putField(env, env.createString(key), env.wrapJava(value));
+      }
+      else{
+        result.put(env.createString(key), env.wrapJava(value));
+      }
     }
     return result;
+  }
+
+
+  public static ArrayValue arrayFromJson(Env env, JsonArray json) {
+    return arrayFromJson(env, json, false);
   }
 
   /**
@@ -449,19 +520,20 @@ public class PhpTypes {
    * @param json A Vert.x json array.
    * @return A populated PHP array.
    */
-  public static ArrayValue arrayFromJson(Env env, JsonArray json) {
+  public static ArrayValue arrayFromJson(Env env, JsonArray json, boolean asStdClass) {
     ArrayValue result = new ArrayValueImpl();
+
     Iterator<Object> iter = json.iterator();
     while (iter.hasNext()) {
       Object value = iter.next();
       if (value instanceof JsonObject) {
-        result.put(PhpTypes.arrayFromJson(env, (JsonObject) value));
+        result.put(PhpTypes.arrayFromJson(env, (JsonObject) value, asStdClass));
       }
       else if (value instanceof JsonArray) {
-        result.put(PhpTypes.arrayFromJson(env, (JsonArray) value));
+        result.put(PhpTypes.arrayFromJson(env, (JsonArray) value, asStdClass));
       }
       else {
-        result.put(env.wrapJava(iter.next()));
+        result.put(env.wrapJava(value));
       }
     }
     return result;
