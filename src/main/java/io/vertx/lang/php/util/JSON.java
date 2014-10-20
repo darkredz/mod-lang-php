@@ -12,6 +12,11 @@ import java.util.Arrays;
 public class JSON {
 
   public static StringValue encode(Env env, Value jsonArr) {
+
+    if(jsonArr==null || jsonArr.isNull()){
+      return env.createString("null");
+    }
+
     if(!jsonArr.isArray()){
       return jsonArr.toStringValue();
     }
