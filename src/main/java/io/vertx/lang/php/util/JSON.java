@@ -4,12 +4,37 @@ import com.caucho.quercus.env.*;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by leng on 10/15/14.
  */
 public class JSON {
+
+  public static StringValue bytesToStringUTF(Env env, JavaListAdapter arr) {
+    byte[] bytes = new byte[arr.getSize()];
+
+    Iterator<Map.Entry<Value, Value>> iter = arr.getIterator(env);
+
+    while (iter.hasNext()) {
+      Map.Entry<Value, Value> entry = iter.next();
+
+      Value key = entry.getKey();
+      Value value = entry.getValue();
+      bytes[key.toInt()] = (byte) value.toInt();
+    }
+    try{
+      return env.createString(new String(bytes, "UTF-8"));
+    }
+    catch(Exception err){
+
+    }
+    return null;
+  }
 
   public static StringValue encode(Env env, Value jsonArr) {
 
