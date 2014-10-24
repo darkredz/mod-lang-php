@@ -16,6 +16,9 @@ import java.util.Map;
 public class JSON {
 
   public static StringValue bytesToStringUTF(Env env, JavaListAdapter arr) {
+    if(arr == null){
+      return null;
+    }
     byte[] bytes = new byte[arr.getSize()];
 
     Iterator<Map.Entry<Value, Value>> iter = arr.getIterator(env);

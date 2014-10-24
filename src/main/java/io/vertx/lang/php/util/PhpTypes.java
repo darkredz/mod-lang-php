@@ -328,7 +328,7 @@ public class PhpTypes {
         json.putNumber(key.toString(), value.toJavaDouble());
       }
       else if (value.isNumeric()) {
-        json.putNumber(key.toString(), value.toInt());
+        json.putNumber(key.toString(), value.toLong());
       }
       else if (value.isString()) {
         json.putString(key.toString(), value.toString());
@@ -382,7 +382,7 @@ public class PhpTypes {
         json.addNumber(value.toJavaDouble());
       }
       else if (value.isNumeric()) {
-        json.addNumber(value.toInt());
+          json.addNumber(value.toLong());
       }
       else if (value.isString()) {
         json.addString(value.toString());
