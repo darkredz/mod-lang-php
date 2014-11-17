@@ -87,9 +87,17 @@ public class JSON {
   }
 
   public static Value decode(Env env, StringValue jsonStr, BooleanValue toArray) {
+    if(jsonStr == null) {
+      return NullValue.create();
+    }
+
+    final String str = jsonStr.toString();
+    if(str.equals("null")) {
+      return NullValue.create();
+    }
+
     if(toArray!=null && toArray.toBoolean()) {
 //      System.out.println("[decode] " + jsonStr.toString());
-      final String str = jsonStr.toString();
       if(jsonStr.startsWith("[")){
         try{
           final JsonArray jsonArr = new JsonArray(str);
@@ -110,10 +118,9 @@ public class JSON {
 //          err2.printStackTrace();
         }
       }
-      return null;
+      return NullValue.create();
     }
     else {
-      final String str = jsonStr.toString();
       if(jsonStr.startsWith("[")) {
         try {
           final JsonArray jsonArr = new JsonArray(str);
@@ -127,7 +134,7 @@ public class JSON {
         } catch (Exception err2) {}
       }
     }
-    return null;
+    return NullValue.create();
   }
 
   public static Value decode(Env env, StringValue jsonStr) {
