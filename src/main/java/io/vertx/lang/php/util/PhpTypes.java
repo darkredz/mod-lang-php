@@ -443,7 +443,7 @@ public class PhpTypes {
     Iterator<String> iter = map.keySet().iterator();
     while (iter.hasNext()) {
       String key = iter.next();
-      Object value = map.get(key);
+      Object value = json.getField(key);
       if (value instanceof JsonObject) {
         if(asStdClass) {
           result.putField(env, env.createString(key), PhpTypes.arrayFromJson(env, (JsonObject) value, asStdClass));
@@ -454,10 +454,10 @@ public class PhpTypes {
       }
       else if (value instanceof JsonArray) {
         if(asStdClass) {
-          result.putField(env, env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value));
+          result.putField(env, env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value, asStdClass));
         }
         else {
-          result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value));
+          result.put(env.createString(key), PhpTypes.arrayFromJson(env, (JsonArray) value, asStdClass));
         }
       }
       else {
@@ -524,6 +524,14 @@ public class PhpTypes {
     ArrayValue result = new ArrayValueImpl();
 
     Iterator<Object> iter = json.iterator();
+
+//    Iterator<Map.Entry<Value, Value>> iter = array.getIterator(env);
+
+//      Map.Entry<Value, Value> entry = iter.next();
+//
+//      Value key = entry.getKey();
+//      Value value = entry.getValue();
+
     while (iter.hasNext()) {
       Object value = iter.next();
       if (value instanceof JsonObject) {
