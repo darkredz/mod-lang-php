@@ -78,6 +78,11 @@ public class HttpClient extends TCPClient<org.vertx.java.core.http.HttpClient> {
     return this;
   }
 
+  public HttpClient trustAll(Env env, BooleanValue trust) {
+    client.setTrustAll(trust.toBoolean());
+    return this;
+  }
+
   /**
    * Returns the max connection pool size.
    */
