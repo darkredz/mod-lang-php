@@ -113,6 +113,13 @@ public class NetSocket implements ReadStream<NetSocket>, WriteStream<NetSocket>,
   }
 
   /**
+   * Returns true if this NetSocket is encrypted via SSL/TLS.
+   */
+  public BooleanValue isSsl(Env env) {
+    return BooleanValue.create(socket.isSsl());
+  }
+
+  /**
    * Indicates whether the write queue is full.
    */
   public BooleanValue writeQueueFull(Env env) {
